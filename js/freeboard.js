@@ -627,6 +627,15 @@ function FreeboardModel(datasourcePlugins, widgetPlugins, freeboardUI)
 		var editing = !self.isEditing();
 		self.setEditing(editing);
 	}
+
+	this.toggleAllowEdit = function()
+	{
+		if (!self.isEditing())
+		{
+			var allow_edit = !self.allow_edit();
+			self.allow_edit(allow_edit);
+		}
+	}
 }
 
 function FreeboardUI()
@@ -2487,6 +2496,10 @@ var freeboard = (function()
         $(window).resize(function() {
             clearTimeout(resizeTimer);
             resizeTimer = setTimeout(resizeEnd, 500);
+        });
+
+        $("#board-content").dblclick(function() {
+	        theFreeboardModel.toggleAllowEdit();
         });
 
 	});
