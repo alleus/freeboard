@@ -1403,6 +1403,7 @@ var freeboard = (function()
 	{
 		var self = this;
 
+		this.storageKey = ko.observable();
 		this.isEditing = ko.observable(false);
 		this.allow_edit = ko.observable(false);
 		this.allow_edit.subscribe(function(newValue)
@@ -1629,6 +1630,50 @@ var freeboard = (function()
 			});
 		}
 
+		this.loadDashboardFromLocalStorage = function()
+		{
+			if(this.storageKey())
+			{
+				var boards = JSON.parse(localStorage.getItem("boards"));
+				if(boards && this.storageKey() in boards)
+				{
+					self.loadDashboard(boards[this.storageKey()]);
+					self.setEditing(false);
+				}
+			}
+		}
+
+		this.saveDashboardToLocalStorage = function()
+		{
+			if(this.storageKey())
+			{
+				var boards = JSON.parse(localStorage.getItem("boards"));
+
+				if(!boards)
+				{
+					boards = {};
+				}
+
+				boards[this.storageKey()] = self.serialize();
+
+				localStorage.setItem("boards", JSON.stringify(boards));
+			}
+		}
+
+		this.removeDashboardFromLocalStorage = function()
+		{
+			if(this.storageKey())
+			{
+				var boards = JSON.parse(localStorage.getItem("boards"));
+
+				if(boards && this.storageKey() in boards)
+				{
+					delete boards[this.storageKey()];
+					localStorage.setItem("boards", JSON.stringify(boards));
+				}
+			}
+		}
+
 		this.loadDashboardFromLocalFile = function()
 		{
 			// Check for the various File API support.
@@ -1773,6 +1818,7 @@ var freeboard = (function()
 		var self = this;
 
 		this.title = ko.observable();
+		this.opaque = ko.observable(true);
 		this.width = ko.observable(1);
 		this.row = {};
 		this.col = {};
@@ -2315,6 +2361,26 @@ var freeboard = (function()
 				}
 
                 freeboard.emit("initialized");
+			}
+
+			var storageKey = getParameterByName("key");
+
+			if(storageKey != "")
+			{
+				if(typeof(Storage) !== "undefined")
+				{
+					theFreeboardModel.storageKey(storageKey);
+					var boards = JSON.parse(localStorage.getItem("boards"));
+					if(boards && storageKey in boards)
+					{
+						theFreeboardModel.loadDashboard(boards[storageKey]);
+					}
+				}
+				else
+				{
+					alert('Unable to use local storage in this browser.');
+				}
+
 			}
 		},
 		newDashboard        : function()
