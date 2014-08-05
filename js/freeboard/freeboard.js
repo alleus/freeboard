@@ -1184,6 +1184,7 @@ var freeboard = (function()
 						if(options.operation == 'edit')
 						{
 							settings.title = viewModel.title();
+							settings.transparent = viewModel.transparent();
 						}
 
 						types = {
@@ -1193,6 +1194,11 @@ var freeboard = (function()
 										name        : "title",
 										display_name: "Title",
 										type        : "text"
+									},
+									{
+										name        : "transparent",
+										display_name: "Transparent background",
+										type        : "boolean"
 									}
 								]
 							}
@@ -1228,6 +1234,7 @@ var freeboard = (function()
 							if(options.type == 'pane')
 							{
 								viewModel.title(newSettings.settings.title);
+								viewModel.transparent(newSettings.settings.transparent);
 							}
 							else
 							{
@@ -1773,6 +1780,7 @@ var freeboard = (function()
 		var self = this;
 
 		this.title = ko.observable();
+		this.transparent = ko.observable(false);
 		this.width = ko.observable(1);
 		this.row = {};
 		this.col = {};
@@ -1842,17 +1850,19 @@ var freeboard = (function()
 			});
 
 			return {
-				title  : self.title(),
-				width  : self.width(),
-				row    : self.row,
-				col    : self.col,
-				widgets: widgets
+				title      : self.title(),
+				transparent: self.transparent(),
+				width      : self.width(),
+				row        : self.row,
+				col        : self.col,
+				widgets    : widgets
 			};
 		}
 
 		this.deserialize = function(object)
 		{
 			self.title(object.title);
+			self.transparent(object.transparent);
 			self.width(object.width);
 
 			self.row = object.row;
